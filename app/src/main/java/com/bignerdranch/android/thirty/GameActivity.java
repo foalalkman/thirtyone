@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -31,7 +30,7 @@ public class GameActivity extends AppCompatActivity {
     private DieAdapter adapter;
     private boolean menuItemLocked;
     private String spinnerSelectedItem;
-    private ArrayList<String> selectedSpinnerItems;
+    private ArrayList<String> spinnerSelectedItemsList;
 
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
@@ -53,7 +52,7 @@ public class GameActivity extends AppCompatActivity {
         savedInstanceState.putParcelable(GAME_KEY, game);
         savedInstanceState.putString(SELECTED_LIST_ITEM_KEY, spinnerSelectedItem);
         savedInstanceState.putInt(MENU_ITEM_LOCKED, (menuItemLocked ? 1 : 0));
-        savedInstanceState.putStringArrayList(SELECTED_SPINNER_ITEMS, selectedSpinnerItems);
+        savedInstanceState.putStringArrayList(SELECTED_SPINNER_ITEMS, spinnerSelectedItemsList);
         savedInstanceState.putParcelable(PLAYER_KEY, activePlayer); //?
     }
 
@@ -69,7 +68,7 @@ public class GameActivity extends AppCompatActivity {
             spinnerSelectedItem = savedInstanceState.getString(SELECTED_LIST_ITEM_KEY);
             activePlayer = savedInstanceState.getParcelable(PLAYER_KEY); // ?
             menuItemLocked = savedInstanceState.getInt(MENU_ITEM_LOCKED) != 0; // funkis?
-            selectedSpinnerItems = savedInstanceState.getStringArrayList(SELECTED_SPINNER_ITEMS);
+            spinnerSelectedItemsList = savedInstanceState.getStringArrayList(SELECTED_SPINNER_ITEMS);
         } else {
 
             game = new Game();
@@ -77,9 +76,8 @@ public class GameActivity extends AppCompatActivity {
 
             dieList = game.populateDiceList(6);
             menuItemLocked = false;
+            spinnerSelectedItemsList = new ArrayList<>();
         }
-
-        selectedSpinnerItems = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.die_recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -141,13 +139,12 @@ public class GameActivity extends AppCompatActivity {
                 Toast.makeText(GameActivity.this, spinnerSelectedItem, Toast.LENGTH_SHORT).show();
                 if (spinnerSelectedItem != null) {
                     if (game.addPointsToPlayer(spinnerSelectedItem)) {
-                        Toast.makeText(GameActivity.this, "Here", Toast.LENGTH_SHORT).show();
                         game.clearPartialSum();
+                        spinnerSelectedItemsList.add(spinnerSelectedItem);
                         spinnerSelectedItem = null;
                         menuItemLocked = false;
-
                         adapter.updateDiceView();
-                        selectedSpinnerItems.add(spinnerSelectedItem);
+
 
                         /** switch to next player if multi player
                             activePlayer = game.getActivePlayer();  - get the new active player */
@@ -164,12 +161,15 @@ public class GameActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parentView,
                                        View selectedItemView, int position, long id) {
 
-                String item = parentView.getItemAtPosition(position).toString();
+                String item = spinner.getSelectedItem().toString();
 
                 if (menuItemLocked) {
                     Toast.makeText(GameActivity.this, "You already started on another category", Toast.LENGTH_SHORT).show();
-                } else if (selectedSpinnerItems.contains(item)) {
+                }
+
+                if (verifyCategory(item)) {
                     Toast.makeText(GameActivity.this, "You are done with this category", Toast.LENGTH_SHORT).show();
+
                 } else {
                     spinnerSelectedItem = item;
                 }
@@ -194,8 +194,16 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-
-
+    private boolean verifyCategory(String what) {
+        if (spinnerSelectedItemsList != null && !spinnerSelectedItemsList.isEmpty()) {
+            for (String s : spinnerSelectedItemsList) {
+                if (s.equals(what)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

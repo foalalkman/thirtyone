@@ -12,6 +12,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class ResultActivity extends AppCompatActivity {
@@ -53,8 +54,27 @@ public class ResultActivity extends AppCompatActivity {
         TextView categoryView;
         Integer value;
 
-        for (Map.Entry<String, Integer> entry : results.entrySet()) {
+//        for (Map.Entry<String, Integer> entry : results.entrySet()) {
+//
+//            TableRow row = new TableRow(this);
+//            row.setPadding(10, 0, 10, 0); // skillnad?
+//
+//            categoryView = new TextView(this);
+//            categoryView.setPadding(0, 0, 20, 10);
+//            valueView = new TextView(this);
+//            valueView.setPadding(0, 0, 0, 10);
+//            categoryView.setText(entry.getKey() + ": ");
+//            value = entry.getValue();
+//            if (value != null) {
+//                valueView.setText("" + entry.getValue());
+//            }
+//            row.addView(categoryView);
+//            row.addView(valueView);
+//
+//            tableLayout.addView(row);
+//        }
 
+        for (Integer i = 3; i <= 10; i++) {
             TableRow row = new TableRow(this);
             row.setPadding(10, 0, 10, 0); // skillnad?
 
@@ -62,11 +82,13 @@ public class ResultActivity extends AppCompatActivity {
             categoryView.setPadding(0, 0, 20, 10);
             valueView = new TextView(this);
             valueView.setPadding(0, 0, 0, 10);
-            categoryView.setText(entry.getKey() + ": ");
-            value = entry.getValue();
+
+            categoryView.setText("" + i + ": ");
+            value = results.get(i);
             if (value != null) {
-                valueView.setText("" + entry.getValue());
+                valueView.setText(value);
             }
+
             row.addView(categoryView);
             row.addView(valueView);
 
