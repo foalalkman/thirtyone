@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Thirty</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="menu">
+        <item>Low</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string name="spinner_select_category">Select category</string>
+
+    <string name="roll_button_text">Roll</string>
+
+    <string name="button_submit_dice_text">Submit</string>
+
+    <string name="button_done_text">Done</string>
+    <string name="button_show_result_view_text">Show results</string>
+
+    <string name="button_return_text">Return</string>
+</resources>
