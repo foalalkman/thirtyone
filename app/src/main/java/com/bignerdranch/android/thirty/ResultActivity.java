@@ -12,25 +12,18 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 public class ResultActivity extends AppCompatActivity {
 
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
 
-    private TableLayout tableLayout;
-    private Button returnButton;
-
-
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        //
     }
 
-    @Override // fixa rotation!
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.result_view);
@@ -38,10 +31,7 @@ public class ResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         HashMap<String, Integer> results = (HashMap<String, Integer>)intent.getSerializableExtra(EXTRA_SCORE_BOARD);
 
-        tableLayout = (TableLayout) findViewById(R.id.result_view_table);
-
-        returnButton = (Button) findViewById(R.id.button_return);
-
+        Button returnButton = (Button) findViewById(R.id.button_return);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,32 +39,13 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
 
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.result_view_table);
 
         TextView valueView;
         TextView categoryView;
         Integer value;
 
-//        for (Map.Entry<String, Integer> entry : results.entrySet()) {
-//
-//            TableRow row = new TableRow(this);
-//            row.setPadding(10, 0, 10, 0); // skillnad?
-//
-//            categoryView = new TextView(this);
-//            categoryView.setPadding(0, 0, 20, 10);
-//            valueView = new TextView(this);
-//            valueView.setPadding(0, 0, 0, 10);
-//            categoryView.setText(entry.getKey() + ": ");
-//            value = entry.getValue();
-//            if (value != null) {
-//                valueView.setText("" + entry.getValue());
-//            }
-//            row.addView(categoryView);
-//            row.addView(valueView);
-//
-//            tableLayout.addView(row);
-//        }
-
-        for (Integer i = 3; i <= 10; i++) {
+        for (int i = 3; i <= 10; i++) {
             TableRow row = new TableRow(this);
             row.setPadding(10, 0, 10, 0); // skillnad?
 
@@ -83,10 +54,17 @@ public class ResultActivity extends AppCompatActivity {
             valueView = new TextView(this);
             valueView.setPadding(0, 0, 0, 10);
 
-            categoryView.setText("" + i + ": ");
-            value = results.get(i);
+            if (i == 3) {
+                categoryView.setText(R.string.category_low_text);
+                value = results.get("Low");
+
+            } else {
+                categoryView.setText("" + i + ": ");
+                value = results.get(""+i);
+            }
+
             if (value != null) {
-                valueView.setText(value);
+                valueView.setText(""+value+"");
             }
 
             row.addView(categoryView);
@@ -94,8 +72,6 @@ public class ResultActivity extends AppCompatActivity {
 
             tableLayout.addView(row);
         }
-
-
     }
 
     @Override

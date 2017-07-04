@@ -5,13 +5,11 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Game implements Parcelable {
     private ArrayList<Player> players;
     private ArrayList<Die> dice;
     private static int cursor = 0;
-    private final int MAXIMUM_THROWS = 2;
     private HashMap<String, Integer> categories;
     private int partialSum = 0;
 
@@ -44,7 +42,6 @@ public class Game implements Parcelable {
             }
         }
         return dice.isEmpty()? null : dice;
-
     }
 
     public void addPlayer(String name) {
@@ -58,8 +55,6 @@ public class Game implements Parcelable {
     public int getNumberOfPlayers() {
         return players.size();
     }
-
-
 
     public boolean anyDiceSelected() {
         for (Die die : dice) {
@@ -82,7 +77,7 @@ public class Game implements Parcelable {
         int sum = 0;
 
         for (Die die : dice) {
-            if (die.getActiveState() == 1) {       //
+            if (die.getActiveState() == 1) {
                 sum += die.getValue();
             }
         }
@@ -112,7 +107,7 @@ public class Game implements Parcelable {
         if (partialSum == 0) {
             return false;
         } else {
-            return getActivePlayer().addValue(category, partialSum);
+            return getActivePlayer().score(category, partialSum);
         }
     }
 
@@ -140,12 +135,12 @@ public class Game implements Parcelable {
         parcel.writeMap(categories);
     }
 
-
-
     public class Player implements Parcelable {
         private String name;
         private HashMap<String, Integer> combinations;
+        private final int MAXIMUM_THROWS = 2;
         private int throwCounter;
+
 
         public Player(String name) {
             this.name = name;
@@ -166,7 +161,7 @@ public class Game implements Parcelable {
             throwCounter = 0;
         }                   // funkar detta?
 
-        public void initilalizeScoreBoard() { // initializeScoreBoard
+        public void initilalizeScoreBoard() {
             combinations.put("Low", null);
             String choice;
 
@@ -180,8 +175,7 @@ public class Game implements Parcelable {
             return combinations;
         }
 
-
-        public boolean addValue(String choice, int value) { // annat namn
+        public boolean score(String choice, int value) { // annat namn
             if (combinations.get(choice) == null) {
                 combinations.put(choice, value);
                 return true;

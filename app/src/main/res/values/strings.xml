@@ -25,4 +25,6 @@
     <string name="button_show_result_view_text">Show results</string>
 
     <string name="button_return_text">Return</string>
+
+    <string name="category_low_text">Low</string>
 </resources>

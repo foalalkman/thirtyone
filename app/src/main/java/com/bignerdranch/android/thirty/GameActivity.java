@@ -21,11 +21,6 @@ public class GameActivity extends AppCompatActivity {
     private Game game;
     private Game.Player activePlayer;
     private Spinner spinner;
-    private Button rollButton;
-    private Button submitButton;
-    private Button doneButton;
-    private Button resultButton;
-    private RecyclerView recyclerView;
     private ArrayList<Die> dieList;
     private DieAdapter adapter;
     private boolean menuItemLocked;
@@ -34,7 +29,6 @@ public class GameActivity extends AppCompatActivity {
 
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
-
 
     private final String GAME_KEY = "Game";
     private final String DIE_LIST_KEY = "Dice";
@@ -79,12 +73,12 @@ public class GameActivity extends AppCompatActivity {
             spinnerSelectedItemsList = new ArrayList<>();
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.die_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.die_recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new DieAdapter(dieList, this);
         recyclerView.setAdapter(adapter);
 
-        rollButton = (Button) findViewById(R.id.roll_button);
+        Button rollButton = (Button) findViewById(R.id.roll_button);
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +98,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        submitButton = (Button) findViewById(R.id.button_submit_dice);
+        Button submitButton = (Button) findViewById(R.id.button_submit_dice);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,7 +126,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        doneButton = (Button) findViewById(R.id.button_done);
+        Button doneButton = (Button) findViewById(R.id.button_done);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +175,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        resultButton = (Button) findViewById(R.id.button_result_view);
+        Button resultButton = (Button) findViewById(R.id.button_result_view);
         resultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
