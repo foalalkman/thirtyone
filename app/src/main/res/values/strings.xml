@@ -3,7 +3,8 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="menu">
-        <item>Low</item>
+        <item>Select category:</item>
+        <item>LOW</item>
         <item>4</item>
         <item>5</item>
         <item>6</item>
@@ -26,5 +27,6 @@
 
     <string name="button_return_text">Return</string>
 
-    <string name="category_low_text">Low</string>
+    <string name="category_low_text">LOW</string>
+    <string name="colon">:</string>
 </resources>

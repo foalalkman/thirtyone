@@ -11,7 +11,6 @@ public class Game implements Parcelable {
     private ArrayList<Die> dice;
     private static int cursor = 0;
     private HashMap<String, Integer> categories;
-    private int partialSum = 0;
 
     public Game() {
         players = new ArrayList<>();
@@ -20,14 +19,14 @@ public class Game implements Parcelable {
         initializeCategories();
     }
 
-    private Game (Parcel in) {
+    private Game(Parcel in) {
         cursor = in.readInt();
         in.readTypedList(players, null);
         in.readMap(categories, null);
     }
 
     private void initializeCategories() {
-        categories.put("Low", 3);
+        categories.put("LOW", 3);
 
         for (Integer i = 4; i <= 12; i++) {
             categories.put(i.toString(), i);
@@ -86,7 +85,11 @@ public class Game implements Parcelable {
     }
 
     public boolean isSumLegal(int sum, String choice) {
-        int value = categories.get(choice);
+        Integer value = categories.get(choice);
+
+        if (value == null) {
+            return false;
+        }
 
         if (value < 4) {
             return sum < 4;
@@ -95,19 +98,32 @@ public class Game implements Parcelable {
         }
     }
 
-    public void addPartialSum(int sum) {
-        partialSum += sum;
-    }
+    public boolean addPoints(String category, Integer sum) {
+        Player activePlayer = getActivePlayer();
 
-    public void clearPartialSum() {
-        partialSum = 0;
-    }
+        if (activePlayer.submissionStarted()) {
+            return activePlayer.score(category, sum);
 
-    public boolean addPointsToPlayer(String category) {
-        if (partialSum == 0) {
-            return false;
         } else {
-            return getActivePlayer().score(category, partialSum);
+
+            if (activePlayer.categoryOpen(category)) {
+                activePlayer.startSubmission(category);
+                return activePlayer.score(category, sum);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public boolean endSubmission(String category) {
+        Player activePlayer = getActivePlayer();
+
+        if (activePlayer.getCurrentSubmissionCategory().equals(category)) {
+            activePlayer.endSubmission();
+            return true;
+
+        } else {
+            return false;
         }
     }
 
@@ -140,6 +156,8 @@ public class Game implements Parcelable {
         private HashMap<String, Integer> combinations;
         private final int MAXIMUM_THROWS = 2;
         private int throwCounter;
+        private boolean ongoingSubmission;
+        private String currentSubmissionCategory;
 
 
         public Player(String name) {
@@ -147,6 +165,8 @@ public class Game implements Parcelable {
             combinations = new HashMap<>();
             initilalizeScoreBoard();
             throwCounter = 0;
+            ongoingSubmission = false;
+            currentSubmissionCategory = "";
         }
 
         public boolean playerCanThrow() {
@@ -159,10 +179,10 @@ public class Game implements Parcelable {
 
         public void clearThrowCounter() {
             throwCounter = 0;
-        }                   // funkar detta?
+        }
 
         public void initilalizeScoreBoard() {
-            combinations.put("Low", null);
+            combinations.put("LOW", null);
             String choice;
 
             for (int i = 4; i <= 12; i++) {
@@ -171,23 +191,56 @@ public class Game implements Parcelable {
             }
         }
 
+        public void startSubmission(String category) {
+            currentSubmissionCategory = category;
+            ongoingSubmission = true;
+        }
+
+        public boolean submissionStarted() {
+            return ongoingSubmission;
+        }
+
+        public String getCurrentSubmissionCategory() {
+            return currentSubmissionCategory;
+        }
+        public void endSubmission() {
+            currentSubmissionCategory = "";
+            ongoingSubmission = false;
+        }
+
         public HashMap<String, Integer> getScores() {
             return combinations;
         }
 
-        public boolean score(String choice, int value) { // annat namn
-            if (combinations.get(choice) == null) {
-                combinations.put(choice, value);
+        public boolean score(String choice, int value) {
+            if (choice.equals(currentSubmissionCategory)) {
+
+                Integer currentValue = combinations.get(choice);
+
+                if (currentValue == null) {
+                    combinations.put(choice, value);
+
+                } else {
+                    combinations.put(choice, currentValue + value);
+                }
+
                 return true;
+
             } else {
                 return false;
             }
+        }
+
+        public boolean categoryOpen(String category) {
+            return combinations.get(category) == null;
         }
 
         private Player(Parcel in) {
             in.readMap(combinations, null);
             name = in.readString();
             throwCounter = in.readInt();
+            ongoingSubmission = in.readInt() == 1;
+            currentSubmissionCategory = in.readString();
         }
 
         public final Parcelable.Creator<Player> CREATOR = new Parcelable.Creator<Player>() {
@@ -212,6 +265,8 @@ public class Game implements Parcelable {
             parcel.writeInt(throwCounter);
             parcel.writeMap(combinations);
             parcel.writeString(name);
+            parcel.writeInt(ongoingSubmission ? 1 : 0);
+            parcel.writeString(currentSubmissionCategory);
         }
     }
 }

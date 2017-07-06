@@ -1,6 +1,7 @@
 package com.bignerdranch.android.thirty;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -51,12 +52,17 @@ public class ResultActivity extends AppCompatActivity {
 
             categoryView = new TextView(this);
             categoryView.setPadding(0, 0, 20, 10);
+            categoryView.setTextSize(20);
+            categoryView.setTypeface(null, Typeface.BOLD);
+
             valueView = new TextView(this);
             valueView.setPadding(0, 0, 0, 10);
+            valueView.setTextSize(20);
 
             if (i == 3) {
-                categoryView.setText(R.string.category_low_text);
-                value = results.get("Low");
+
+                categoryView.setText("LOW:");
+                value = results.get("LOW");
 
             } else {
                 categoryView.setText("" + i + ": ");

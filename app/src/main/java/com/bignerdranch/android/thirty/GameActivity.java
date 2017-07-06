@@ -20,12 +20,12 @@ public class GameActivity extends AppCompatActivity {
 
     private Game game;
     private Game.Player activePlayer;
-    private Spinner spinner;
     private ArrayList<Die> dieList;
     private DieAdapter adapter;
     private boolean menuItemLocked;
     private String spinnerSelectedItem;
     private ArrayList<String> spinnerSelectedItemsList;
+    private Spinner spinner;
 
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
@@ -36,8 +36,6 @@ public class GameActivity extends AppCompatActivity {
     private final String SELECTED_LIST_ITEM_KEY = "Selected item";
     private final String MENU_ITEM_LOCKED = "Menu item locked";
     private final String SELECTED_SPINNER_ITEMS = "Spinner selected items";
-
-
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -55,7 +53,6 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-
         if (savedInstanceState != null) {
             dieList = savedInstanceState.getParcelableArrayList(DIE_LIST_KEY);
             game = savedInstanceState.getParcelable(GAME_KEY);
@@ -63,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
             activePlayer = savedInstanceState.getParcelable(PLAYER_KEY); // ?
             menuItemLocked = savedInstanceState.getInt(MENU_ITEM_LOCKED) != 0; // funkis?
             spinnerSelectedItemsList = savedInstanceState.getStringArrayList(SELECTED_SPINNER_ITEMS);
+
         } else {
 
             game = new Game();
@@ -84,16 +82,23 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 activePlayer = game.getActivePlayer();
 
-                if (activePlayer.playerCanThrow()) {
-                    if (game.anyDiceSelected()) {
-                        adapter.rollDice();
-                        activePlayer.increaseThrowCounter();
-                    } else {
-                        Toast.makeText(GameActivity.this, "Choose dice to throw", Toast.LENGTH_SHORT).show();
-                    }
+                if ((activePlayer != null)) {
 
+                    if (activePlayer.playerCanThrow()) {
+
+                        if (game.anyDiceSelected()) {
+                            adapter.rollDice();
+                            activePlayer.increaseThrowCounter();
+
+                        } else {
+                            Toast.makeText(GameActivity.this, "Choose dice to throw", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        Toast.makeText(GameActivity.this, "No rolls left", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(GameActivity.this, "Pick dice and commit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, "Player missing", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -108,10 +113,10 @@ public class GameActivity extends AppCompatActivity {
                         int sum = game.sumActiveDice();
 
                         if (game.isSumLegal(sum, spinnerSelectedItem)) {
-                            game.addPartialSum(sum);
+
+                            game.addPoints(spinnerSelectedItem, sum); // kolla om true eller false kanske
                             adapter.disableActiveDice();
                             menuItemLocked = true;
-
 
                         } else {
                             Toast.makeText(GameActivity.this, "Sum doesn't match the category", Toast.LENGTH_SHORT).show();
@@ -120,6 +125,7 @@ public class GameActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(GameActivity.this, "Select dice", Toast.LENGTH_SHORT).show();
                     }
+
                 } else {
                     Toast.makeText(GameActivity.this, "Select a category", Toast.LENGTH_SHORT).show();
                 }
@@ -130,19 +136,19 @@ public class GameActivity extends AppCompatActivity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(GameActivity.this, spinnerSelectedItem, Toast.LENGTH_SHORT).show();
                 if (spinnerSelectedItem != null) {
-                    if (game.addPointsToPlayer(spinnerSelectedItem)) {
-                        game.clearPartialSum();
-                        spinnerSelectedItemsList.add(spinnerSelectedItem);
-                        spinnerSelectedItem = null;
-                        menuItemLocked = false;
-                        adapter.updateDiceView();
 
+                    game.endSubmission(spinnerSelectedItem);
+                    activePlayer.clearThrowCounter();
+                    spinnerSelectedItemsList.add(spinnerSelectedItem);
+                    spinnerSelectedItem = null;
+                    menuItemLocked = false;
+                    adapter.updateDiceView();
+                    spinner.setSelection(0);
 
-                        /** switch to next player if multi player
-                            activePlayer = game.getActivePlayer();  - get the new active player */
-                    }
+                    /** switch to next player if multi player
+                        activePlayer = game.getActivePlayer();  - get the new active player */
+
                 } else {
                     Toast.makeText(GameActivity.this, "Choose category and add points", Toast.LENGTH_SHORT).show();
                 }
@@ -157,16 +163,24 @@ public class GameActivity extends AppCompatActivity {
 
                 String item = spinner.getSelectedItem().toString();
 
-                if (menuItemLocked) {
-                    Toast.makeText(GameActivity.this, "You already started on another category", Toast.LENGTH_SHORT).show();
-                }
+                    if (!item.equals("Select category:")) {
 
-                if (verifyCategory(item)) {
-                    Toast.makeText(GameActivity.this, "You are done with this category", Toast.LENGTH_SHORT).show();
+                        if (menuItemLocked) {
+                            if (spinnerSelectedItem != null && !spinnerSelectedItem.equals(item)) {
+                                Toast.makeText(GameActivity.this, "You already started with category " + spinnerSelectedItem, Toast.LENGTH_SHORT).show();
+                            }
 
-                } else {
-                    spinnerSelectedItem = item;
-                }
+                        } else {
+
+                            if (verifyCategory(item)) {
+                                Toast.makeText(GameActivity.this, "You are done with this category", Toast.LENGTH_SHORT).show();
+
+                            } else {
+                                spinnerSelectedItem = item;
+                            }
+                        }
+                    }
+//                }
             }
 
             @Override
