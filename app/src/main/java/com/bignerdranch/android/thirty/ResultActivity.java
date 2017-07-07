@@ -1,5 +1,10 @@
 package com.bignerdranch.android.thirty;
 
+/**
+ * Author: Annika Svedin
+ * email: annika.svedin@gmail.com
+ * */
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -45,10 +50,11 @@ public class ResultActivity extends AppCompatActivity {
         TextView valueView;
         TextView categoryView;
         Integer value;
+        int total = 0;
 
-        for (int i = 3; i <= 10; i++) {
+        for (int i = 3; i <= 12; i++) {
             TableRow row = new TableRow(this);
-            row.setPadding(10, 0, 10, 0); // skillnad?
+//            row.setPadding(10, 0, 10, 0); // skillnad?
 
             categoryView = new TextView(this);
             categoryView.setPadding(0, 0, 20, 10);
@@ -71,6 +77,7 @@ public class ResultActivity extends AppCompatActivity {
 
             if (value != null) {
                 valueView.setText(""+value+"");
+                total += value;
             }
 
             row.addView(categoryView);
@@ -78,6 +85,23 @@ public class ResultActivity extends AppCompatActivity {
 
             tableLayout.addView(row);
         }
+
+        TableRow row = new TableRow(this);
+
+        categoryView = new TextView(this);
+        categoryView.setPadding(0, 0, 20, 10);
+        categoryView.setTextSize(25);
+        categoryView.setTypeface(null, Typeface.BOLD);
+        categoryView.setText("Total: ");
+
+        valueView = new TextView(this);
+        valueView.setTextSize(20);
+        valueView.setText(""+total+"");
+
+        row.addView(categoryView);
+        row.addView(valueView);
+        tableLayout.addView(row);
+
     }
 
     @Override

@@ -1,5 +1,10 @@
 package com.bignerdranch.android.thirty;
 
+/**
+ * Author: Annika Svedin
+ * email: annika.svedin@gmail.com
+ */
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,18 +14,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import java.util.ArrayList;
 
-
-public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
+class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
 
     private ArrayList<Die> dice;
     private Context context;
 
-    public DieAdapter(ArrayList<Die> dice, Context context) {
+    DieAdapter(ArrayList<Die> dice, Context context) {
         this.dice = dice;
         this.context = context;
     }
 
-    public void rollDice() {
+    /**
+     * Rolls every active die in the collection and update the view to display the new state.
+     */
+     void rollDice() {
         for (Die die : dice) {
             if (die.getActiveState() == 1) {
                 die.rollDie();
@@ -29,7 +36,12 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
             }
         }
     }
-    public void disableActiveDice() {
+
+    /**
+     * Every active dice in the collection sets to disabled, which indicates they are not clickable,
+     * updates the view.
+     */
+    void disableActiveDice() {
         for (Die die : dice) {
             if (die.getActiveState() == 1) {
                 die.disableDie();
@@ -38,7 +50,11 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
         }
     }
 
-    public int getTotalValue() { // borde ligga i game
+    /**
+     *
+     * @return the total avlue of the dice being Active.
+     */
+    int getTotalValue() {
         int totalValue = 0;
 
         for (Die die : dice) {
@@ -46,18 +62,21 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
                 totalValue += die.getValue();
             }
         }
-        return totalValue; // gl;m inte cleara sen, passande st'lle
+        return totalValue;
     }
 
-    public void updateDiceView() {
+    /**
+     * Rolls all dice in the collection, sets their state to passive and updates the view.
+     */
+    void updateDiceView() {
         for (Die die : dice) {
             die.rollDie();
-            die.setState(0); // set state to passive
+            die.setState(0);
             notifyItemChanged(dice.indexOf(die));
         }
     }
 
-    @Override // ska skapa instans av DieHolder
+    @Override
     public DieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.die_view, parent, false);
@@ -65,7 +84,7 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
         return new DieHolder(itemView);
     }
 
-    @Override // ska binda data till DieHolder
+    @Override
     public void onBindViewHolder(DieHolder holder, int position) {
         final Die die = dice.get(position);
         holder.die = die;
@@ -78,10 +97,10 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
     }
 
 
-    public class DieHolder extends RecyclerView.ViewHolder {
-        public ImageView dieView;
-        public RelativeLayout relativeLayout;
-        public Die die;
+    class DieHolder extends RecyclerView.ViewHolder {
+        ImageView dieView;
+        RelativeLayout relativeLayout;
+        Die die;
 
 
         private final Integer[] images_red_dice = { R.drawable.red1,
@@ -105,7 +124,7 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
                 R.drawable.white5,
                 R.drawable.white6 };
 
-        public DieHolder(View view) {
+        DieHolder(View view) {
             super(view);
             dieView = view.findViewById(R.id.die_view_image);
 
@@ -119,7 +138,7 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
             });
         }
 
-        public void updateImage() {
+        void updateImage() {
             int state = die.getActiveState();
 
             switch(state) {
@@ -137,8 +156,6 @@ public class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
                     throw new IllegalStateException("State not defined");
 
             }
-
         }
     }
-
 }

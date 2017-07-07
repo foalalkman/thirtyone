@@ -1,5 +1,10 @@
 package com.bignerdranch.android.thirty;
 
+/**
+ * Author: Annika Svedin
+ * email: annika.svedin@gmail.com
+ * */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,11 +37,14 @@ public class GameActivity extends AppCompatActivity {
 
     private final String GAME_KEY = "Game";
     private final String DIE_LIST_KEY = "Dice";
-    private final String PLAYER_KEY = "Player"; // ?
     private final String SELECTED_LIST_ITEM_KEY = "Selected item";
     private final String MENU_ITEM_LOCKED = "Menu item locked";
     private final String SELECTED_SPINNER_ITEMS = "Spinner selected items";
 
+    /**
+     * Saves the data in a bundle if the class is being destroyed for some reason.
+     * @param savedInstanceState a bundle for storing state.
+     */
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -45,9 +53,13 @@ public class GameActivity extends AppCompatActivity {
         savedInstanceState.putString(SELECTED_LIST_ITEM_KEY, spinnerSelectedItem);
         savedInstanceState.putInt(MENU_ITEM_LOCKED, (menuItemLocked ? 1 : 0));
         savedInstanceState.putStringArrayList(SELECTED_SPINNER_ITEMS, spinnerSelectedItemsList);
-        savedInstanceState.putParcelable(PLAYER_KEY, activePlayer); //?
     }
 
+    /**
+     * The first thing that happens when the activity is launched. Initializes the widgets and the
+     * state of the activity.
+     * @param savedInstanceState a bundle storing the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +69,7 @@ public class GameActivity extends AppCompatActivity {
             dieList = savedInstanceState.getParcelableArrayList(DIE_LIST_KEY);
             game = savedInstanceState.getParcelable(GAME_KEY);
             spinnerSelectedItem = savedInstanceState.getString(SELECTED_LIST_ITEM_KEY);
-            activePlayer = savedInstanceState.getParcelable(PLAYER_KEY); // ?
-            menuItemLocked = savedInstanceState.getInt(MENU_ITEM_LOCKED) != 0; // funkis?
+            menuItemLocked = savedInstanceState.getInt(MENU_ITEM_LOCKED) != 0;
             spinnerSelectedItemsList = savedInstanceState.getStringArrayList(SELECTED_SPINNER_ITEMS);
 
         } else {
@@ -78,6 +89,10 @@ public class GameActivity extends AppCompatActivity {
 
         Button rollButton = (Button) findViewById(R.id.roll_button);
         rollButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Rolls the selected dice if the player has rolls left in the current round.
+             * @param view the view being clicked on.
+             */
             @Override
             public void onClick(View view) {
                 activePlayer = game.getActivePlayer();
@@ -88,7 +103,7 @@ public class GameActivity extends AppCompatActivity {
 
                         if (game.anyDiceSelected()) {
                             adapter.rollDice();
-                            activePlayer.increaseThrowCounter();
+                            activePlayer.increaseRollCounter();
 
                         } else {
                             Toast.makeText(GameActivity.this, "Choose dice to throw", Toast.LENGTH_SHORT).show();
@@ -105,6 +120,16 @@ public class GameActivity extends AppCompatActivity {
 
         Button submitButton = (Button) findViewById(R.id.button_submit_dice);
         submitButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Checks if the player is submitting a correct value of dice according to the category,
+             * and submits points to the players score board.
+             * Asks the adapter to set the state of the used dice to Disabled, indicating the dice
+             * can't be used again.
+             *
+             * Locks the category so that the player is unable to change category within the same round.
+             *
+             * @param view the view being clicked on.
+             */
             @Override
             public void onClick(View view) {
                 if (spinnerSelectedItem != null) {
@@ -114,7 +139,7 @@ public class GameActivity extends AppCompatActivity {
 
                         if (game.isSumLegal(sum, spinnerSelectedItem)) {
 
-                            game.addPoints(spinnerSelectedItem, sum); // kolla om true eller false kanske
+                            game.submit(spinnerSelectedItem, sum);
                             adapter.disableActiveDice();
                             menuItemLocked = true;
 
@@ -134,12 +159,19 @@ public class GameActivity extends AppCompatActivity {
 
         Button doneButton = (Button) findViewById(R.id.button_done);
         doneButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Tells the game that the submission is over and can be closed.
+             * Clear the activePlayers rollCounter, store the used category in a collection for
+             * used categories. Unlocks the spinner, let the adapter roll and reset the dice.
+             * @param view the view being clicked on.
+             */
             @Override
             public void onClick(View view) {
                 if (spinnerSelectedItem != null) {
 
+                    activePlayer = game.getActivePlayer();
                     game.endSubmission(spinnerSelectedItem);
-                    activePlayer.clearThrowCounter();
+                    activePlayer.clearRollCounter();
                     spinnerSelectedItemsList.add(spinnerSelectedItem);
                     spinnerSelectedItem = null;
                     menuItemLocked = false;
@@ -155,8 +187,17 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+
         spinner = (Spinner) findViewById(R.id.spinner_menu);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+             * Invoked when an item is selected in the spinner. Places the item in 'spinnerSelectedItem'
+             * if the item is not used already, or if the player hasn't started on another category.
+             * @param parentView the spinner.
+             * @param selectedItemView the view representing the item.
+             * @param position the position of the chosen item.
+             * @param id the row id of the item.
+             */
             @Override
             public void onItemSelected(AdapterView<?> parentView,
                                        View selectedItemView, int position, long id) {
@@ -180,7 +221,6 @@ public class GameActivity extends AppCompatActivity {
                             }
                         }
                     }
-//                }
             }
 
             @Override
@@ -189,6 +229,9 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * Navigates to the result view.
+         */
         Button resultButton = (Button) findViewById(R.id.button_result_view);
         resultButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,10 +245,15 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private boolean verifyCategory(String what) {
+    /**
+     *
+     * @param category the chosen category.
+     * @return true if a list item in the spinner was already used.
+     */
+    private boolean verifyCategory(String category) {
         if (spinnerSelectedItemsList != null && !spinnerSelectedItemsList.isEmpty()) {
             for (String s : spinnerSelectedItemsList) {
-                if (s.equals(what)) {
+                if (s.equals(category)) {
                     return true;
                 }
             }
