@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Thirty</string>
     <string name="action_settings">Settings</string>
+    <string name="restart_icon">Restart</string>
 
     <string-array name="menu">
         <item>LOW</item>
