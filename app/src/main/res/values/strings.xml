@@ -3,7 +3,6 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="menu">
-        <item>Select category:</item>
         <item>LOW</item>
         <item>4</item>
         <item>5</item>
