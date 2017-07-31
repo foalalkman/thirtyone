@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -37,14 +35,6 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         HashMap<String, Integer> results = (HashMap<String, Integer>)intent.getSerializableExtra(EXTRA_SCORE_BOARD);
-
-        Button returnButton = (Button) findViewById(R.id.button_return);
-        returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
 
         TableLayout tableLayout = (TableLayout) findViewById(R.id.result_view_table);
 
@@ -101,7 +91,6 @@ public class ResultActivity extends AppCompatActivity {
         row.addView(categoryView);
         row.addView(valueView);
         tableLayout.addView(row);
-
     }
 
     @Override
