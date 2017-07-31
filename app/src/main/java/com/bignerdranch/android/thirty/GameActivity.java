@@ -297,6 +297,15 @@ public class GameActivity extends AppCompatActivity {
         startActivity(resultIntent);
     }
 
+    private void createWidgets() {
+        createDiceBoard();
+        createRollButton();
+        createSubmitButton();
+        createDoneButton();
+        createSpinner();
+        createResultButton();
+    }
+
     /**
      * The first thing that happens when the activity is launched. Initializes the widgets and the
      * state of the activity.
@@ -315,12 +324,7 @@ public class GameActivity extends AppCompatActivity {
             createMenuItemsList();
         }
 
-        createDiceBoard();
-        createRollButton();
-        createSubmitButton();
-        createDoneButton();
-        createSpinner();
-        createResultButton();
+        createWidgets();
     }
 
     @Override
@@ -339,6 +343,10 @@ public class GameActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.restart_game) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+
             return true;
         }
 
