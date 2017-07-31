@@ -61,11 +61,6 @@ public class GameActivity extends AppCompatActivity {
         savedInstanceState.putInt(DICE_SUBMITTED, (diceSubmitted ? 1 : 0));
     }
 
-    private void resetGameActivity() {
-        finish();
-        startActivity(getIntent());
-    }
-
     private void createGameInstance() {
         game = new Game();
         game.addPlayer("Player 1");
@@ -96,9 +91,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void updateRollButton() {
-        // gråa ut knapp
-        // är alla tärningar valda rulla brädet och done'a kategorin(ta bort den från menyn)
-
         if (game.getActivePlayer().playerCanThrow()) {
             rollButton.setEnabled(true);
         } else {
@@ -305,16 +297,6 @@ public class GameActivity extends AppCompatActivity {
         startActivity(resultIntent);
     }
 
-    private void createRestartButton() {
-        // //
-        //
-        //
-
-        //
-        //
-        // //
-    }
-
     /**
      * The first thing that happens when the activity is launched. Initializes the widgets and the
      * state of the activity.
@@ -340,22 +322,6 @@ public class GameActivity extends AppCompatActivity {
         createSpinner();
         createResultButton();
     }
-
-//    /**
-//     *
-//     * @param category the chosen category.
-//     * @return true if a list item in the spinner was already used.
-//     */
-//    private boolean verifyCategory(String category) {
-////        if (spinnerItemsList != null && !spinnerItemsList.isEmpty()) {
-////            for (String s : spinnerItemsList) {
-////                if (s.equals(category)) {
-////                    return true;
-////                }
-////            }
-////        }
-//        return false;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

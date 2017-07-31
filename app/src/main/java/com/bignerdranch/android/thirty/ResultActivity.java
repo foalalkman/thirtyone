@@ -54,7 +54,6 @@ public class ResultActivity extends AppCompatActivity {
 
         for (int i = 3; i <= 12; i++) {
             TableRow row = new TableRow(this);
-//            row.setPadding(10, 0, 10, 0); // skillnad?
 
             categoryView = new TextView(this);
             categoryView.setPadding(0, 0, 20, 10);
