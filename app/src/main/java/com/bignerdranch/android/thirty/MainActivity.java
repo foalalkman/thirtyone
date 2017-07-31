@@ -31,12 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startGameActivity() {
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish();
 
-//        Intent gameIntent = new Intent(MainActivity.this, GameActivity.class);
-//        startActivity(gameIntent);
     }
 
 }

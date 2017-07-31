@@ -5,6 +5,7 @@ package com.bignerdranch.android.thirty;
  * email: annika.svedin@gmail.com
  * */
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -119,6 +120,10 @@ public class ResultActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.restart_game) {
+            Intent intent = new Intent();
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+
             return true;
         }
 

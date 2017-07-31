@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity {
     private Spinner spinner;
     private ArrayAdapter<String> spinnerAdapter;
     private Button rollButton;
+    private int scoreBoardResult = 0;
 
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
@@ -291,10 +292,19 @@ public class GameActivity extends AppCompatActivity {
 
     private void launchResultActivity() {
         Intent resultIntent = new Intent(GameActivity.this, ResultActivity.class);
-
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         HashMap<String, Integer> scores = game.getActivePlayer().getScores();
         resultIntent.putExtra(EXTRA_SCORE_BOARD, scores);
-        startActivity(resultIntent);
+        startActivityForResult(resultIntent, scoreBoardResult);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == scoreBoardResult) {
+            if (resultCode == RESULT_OK) {
+                finish();
+            }
+        }
     }
 
     private void createWidgets() {
@@ -343,15 +353,15 @@ public class GameActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.restart_game) {
-            Intent intent = getIntent();
             finish();
-            startActivity(intent);
 
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
 }
