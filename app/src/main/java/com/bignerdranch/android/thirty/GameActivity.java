@@ -28,7 +28,7 @@ public class GameActivity extends AppCompatActivity {
     private Game.Player activePlayer;
     private ArrayList<Die> dieList;
     private DieAdapter adapter;
-    private boolean menuItemLocked;
+    private boolean menuItemLocked = false;
     private boolean diceSubmitted;
     private String spinnerSelectedItem;
     private ArrayList<String> spinnerItemsList;
@@ -62,14 +62,19 @@ public class GameActivity extends AppCompatActivity {
         savedInstanceState.putInt(DICE_SUBMITTED, (diceSubmitted ? 1 : 0));
     }
 
+    /**
+     * Sets up a new instance of Game, adding one player to it.
+     */
     private void createGameInstance() {
         game = new Game();
         game.addPlayer("Player 1");
 
-        dieList = game.populateDiceList(6);
-        menuItemLocked = false;
+//        menuItemLocked = false;
     }
 
+    /**
+     * Fetches the array containing the categories and places them in a new ArrayList.
+     */
     private void createMenuItemsList() {
         spinnerItemsList = new ArrayList<>();
         String[] menuItems = this.getResources().getStringArray(R.array.menu);
@@ -79,26 +84,36 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Removes a used category from the list of categories to be displayed in the Spinner.
+     */
     private void removeSelectedSpinnerItem() {
         if (spinnerItemsList.contains(spinnerSelectedItem)) {
             spinnerItemsList.remove(spinnerSelectedItem);
         }
     }
 
+    /**
+     * Assigns a new ArrayAdapter that holds the list of categories to be displayed in the Spinner.
+     * Sets the adapter on the Spinner.
+     */
     private void setSpinnerAdapter() {
         spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerItemsList.toArray());
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
     }
 
+    /**
+     * Enables the rollButton if player can roll, otherwise disables it.
+     */
     private void updateRollButton() {
-        if (game.getActivePlayer().playerCanThrow()) {
-            rollButton.setEnabled(true);
-        } else {
-            rollButton.setEnabled(false);
-        }
+        rollButton.setEnabled(game.getActivePlayer().playerCanThrow());
     }
 
+    /**
+     * Gets the stored data from the bundle and assigns it to the instance variables.
+     * @param savedInstanceState a bundle with previously stored data.
+     */
     private void restoreData(Bundle savedInstanceState) {
         dieList = savedInstanceState.getParcelableArrayList(DIE_LIST_KEY);
         game = savedInstanceState.getParcelable(GAME_KEY);
@@ -110,6 +125,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void createDoneButton() {
         Button doneButton = (Button) findViewById(R.id.button_done);
+
         doneButton.setOnClickListener(new View.OnClickListener() {
             /**
              * Tells the game that the submission is over and can be closed.
@@ -119,37 +135,38 @@ public class GameActivity extends AppCompatActivity {
              */
             @Override
             public void onClick(View view) {
-            if (spinnerSelectedItem != null && diceSubmitted) {
+                if (spinnerSelectedItem != null && diceSubmitted) {
+                    game.endSubmission(spinnerSelectedItem);
+                    startNextRound();
 
-                activePlayer = game.getActivePlayer();
-                game.endSubmission(spinnerSelectedItem);
-                activePlayer.clearRollCounter();
+                    /** switch to next player if multi player
+                     activePlayer = game.getActivePlayer();  - get the new active player */
 
-                removeSelectedSpinnerItem();
-                setSpinnerAdapter();
-
-                spinnerSelectedItem = null;
-                menuItemLocked = false;
-
-                adapter.updateDiceView();
-                spinner.setSelection(0);
-
-                updateRollButton();
-                diceSubmitted = false;
-
-                if (spinnerItemsList.isEmpty()) {
-                    launchResultActivity();
+                } else {
+                    Toast.makeText(GameActivity.this, "Choose category and add points", Toast.LENGTH_SHORT).show();
                 }
-
-                /** switch to next player if multi player
-                 activePlayer = game.getActivePlayer();  - get the new active player */
-
-            } else {
-                Toast.makeText(GameActivity.this, "Choose category and add points", Toast.LENGTH_SHORT).show();
-            }
             }
         });
+    }
 
+    /**
+     * Makes the game board ready for the next player by resetting the data.
+     */
+    private void startNextRound() {
+        activePlayer = game.getActivePlayer();
+        activePlayer.clearRollCounter();
+        removeSelectedSpinnerItem();
+        setSpinnerAdapter();
+        spinnerSelectedItem = null;
+        menuItemLocked = false;
+        adapter.updateDiceView();
+        spinner.setSelection(0);
+        updateRollButton();
+        diceSubmitted = false;
+
+        if (spinnerItemsList.isEmpty()) {
+            launchResultActivity();
+        }
     }
 
     private void createRollButton() {
@@ -299,7 +316,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == scoreBoardResult) {
             if (resultCode == RESULT_OK) {
                 finish();
@@ -331,6 +348,7 @@ public class GameActivity extends AppCompatActivity {
 
         } else {
             createGameInstance();
+            dieList = game.populateDiceList(6);
             createMenuItemsList();
         }
 

@@ -23,6 +23,94 @@ public class ResultActivity extends AppCompatActivity {
     private static final String EXTRA_SCORE_BOARD =
             "com.bignerdranch.android.thirty.score_board";
 
+    private HashMap<String, Integer> results;
+    private TableLayout tableLayout;
+    private int total = 0;
+
+    private void fetchResults() {
+        Intent intent = getIntent();
+        results = (HashMap<String, Integer>)intent.getSerializableExtra(EXTRA_SCORE_BOARD);
+    }
+
+    private TextView generateTextView(String text) {
+        TextView textView = new TextView(this);
+        textView.setPadding(0, 0, 20, 10);
+        textView.setTextSize(20);
+        textView.setTypeface(null, Typeface.BOLD);
+        textView.setText(text);
+
+        return textView;
+    }
+
+    private TextView setValueOnView(Integer value) {
+        TextView valueView;
+
+        if (value != null) {
+            valueView = generateValueView(""+value+"");
+            total += value;
+
+        } else {
+            valueView = generateValueView("");
+        }
+
+        return valueView;
+    }
+
+    private TextView generateValueView(String text) {
+        TextView valueView = new TextView(this);
+        valueView.setPadding(0, 0, 0, 10);
+        valueView.setTextSize(20);
+        valueView.setText(text);
+
+        return valueView;
+    }
+    
+    private void generateResultTable() {
+        TextView valueView, categoryView;
+        Integer value;
+        TableRow row;
+
+        for (int i = 3; i <= 12; i++) {
+            row = new TableRow(this);
+            if (i == 3) {
+                categoryView = generateTextView("LOW");
+                value = results.get("LOW");
+
+            } else {
+                categoryView = generateTextView("" + i + ": ");
+                value = results.get(""+i);
+            }
+
+            valueView = setValueOnView(value);
+            addViewToTable(row, categoryView, valueView);
+        }
+    }
+
+    private void addViewToTable(TableRow row, TextView categoryView, TextView valueView) {
+        row.addView(categoryView);
+        row.addView(valueView);
+        tableLayout.addView(row);
+    }
+
+    private TableRow generateTotalRow() {
+        TableRow row = new TableRow(this);
+
+        TextView categoryView = new TextView(this);
+        categoryView.setPadding(0, 0, 20, 10);
+        categoryView.setTextSize(25);
+        categoryView.setTypeface(null, Typeface.BOLD);
+        categoryView.setText("Total: ");
+
+        TextView valueView = new TextView(this);
+        valueView.setTextSize(20);
+        valueView.setText(""+ total +"");
+
+        row.addView(categoryView);
+        row.addView(valueView);
+
+        return row;
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -33,64 +121,11 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.result_view);
 
-        Intent intent = getIntent();
-        HashMap<String, Integer> results = (HashMap<String, Integer>)intent.getSerializableExtra(EXTRA_SCORE_BOARD);
+        fetchResults();
+        tableLayout = (TableLayout) findViewById(R.id.result_view_table);
 
-        TableLayout tableLayout = (TableLayout) findViewById(R.id.result_view_table);
-
-        TextView valueView;
-        TextView categoryView;
-        Integer value;
-        int total = 0;
-
-        for (int i = 3; i <= 12; i++) {
-            TableRow row = new TableRow(this);
-
-            categoryView = new TextView(this);
-            categoryView.setPadding(0, 0, 20, 10);
-            categoryView.setTextSize(20);
-            categoryView.setTypeface(null, Typeface.BOLD);
-
-            valueView = new TextView(this);
-            valueView.setPadding(0, 0, 0, 10);
-            valueView.setTextSize(20);
-
-            if (i == 3) {
-
-                categoryView.setText("LOW:");
-                value = results.get("LOW");
-
-            } else {
-                categoryView.setText("" + i + ": ");
-                value = results.get(""+i);
-            }
-
-            if (value != null) {
-                valueView.setText(""+value+"");
-                total += value;
-            }
-
-            row.addView(categoryView);
-            row.addView(valueView);
-
-            tableLayout.addView(row);
-        }
-
-        TableRow row = new TableRow(this);
-
-        categoryView = new TextView(this);
-        categoryView.setPadding(0, 0, 20, 10);
-        categoryView.setTextSize(25);
-        categoryView.setTypeface(null, Typeface.BOLD);
-        categoryView.setText("Total: ");
-
-        valueView = new TextView(this);
-        valueView.setTextSize(20);
-        valueView.setText(""+total+"");
-
-        row.addView(categoryView);
-        row.addView(valueView);
-        tableLayout.addView(row);
+        generateResultTable();
+        tableLayout.addView(generateTotalRow());
     }
 
     @Override
