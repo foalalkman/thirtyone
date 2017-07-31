@@ -12,7 +12,7 @@
         <activity
             android:name=".GameActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +22,7 @@
         <activity
             android:name=".ResultActivity"
             android:label="Thirty - the results"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" /> ///   kolla boken
