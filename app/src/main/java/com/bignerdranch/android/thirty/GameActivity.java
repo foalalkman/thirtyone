@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity {
     private Spinner spinner;
     private ArrayAdapter<String> spinnerAdapter;
     private Button rollButton;
+    private Button doneButton;
     private int scoreBoardResult = 0;
 
     private static final String EXTRA_SCORE_BOARD =
@@ -46,6 +47,9 @@ public class GameActivity extends AppCompatActivity {
     private final String MENU_ITEM_LOCKED = "Menu item locked";
     private final String SELECTED_SPINNER_ITEMS = "Spinner selected items";
     private final String DICE_SUBMITTED = "Dice submitted";
+
+    public static final int NAVIGATE_UP_CODE = 1;
+    public static final int RESTART_CODE = 0;
 
     /**
      * Saves the data in a bundle if the class is being destroyed for some reason.
@@ -110,6 +114,10 @@ public class GameActivity extends AppCompatActivity {
         rollButton.setEnabled(game.getActivePlayer().playerCanThrow());
     }
 
+    private void updateDoneButton() {
+        doneButton.setEnabled(diceSubmitted);
+    }
+
     /**
      * Gets the stored data from the bundle and assigns it to the instance variables.
      * @param savedInstanceState a bundle with previously stored data.
@@ -123,8 +131,13 @@ public class GameActivity extends AppCompatActivity {
         diceSubmitted = savedInstanceState.getInt(DICE_SUBMITTED) != 0;
     }
 
+    /**
+     * Creates a button and sets an OnClickListener to it.
+     * When clicked the submission ends and a new round starts.
+     */
     private void createDoneButton() {
-        Button doneButton = (Button) findViewById(R.id.button_done);
+        doneButton = (Button) findViewById(R.id.button_done);
+        updateDoneButton();
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             /**
@@ -163,12 +176,18 @@ public class GameActivity extends AppCompatActivity {
         spinner.setSelection(0);
         updateRollButton();
         diceSubmitted = false;
+        updateDoneButton();
 
         if (spinnerItemsList.isEmpty()) {
             launchResultActivity();
         }
     }
 
+    /**
+     * Creates a button and sets an OnClickListener to it.
+     * If at least one Die is selected and the player is allowed to
+     * roll, the selected Dice will roll.
+     */
     private void createRollButton() {
         rollButton = (Button) findViewById(R.id.roll_button);
         rollButton.setOnClickListener(new View.OnClickListener() {
@@ -178,12 +197,9 @@ public class GameActivity extends AppCompatActivity {
              */
             @Override
             public void onClick(View view) {
-            activePlayer = game.getActivePlayer();
+                activePlayer = game.getActivePlayer();
 
-            if ((activePlayer != null)) {
-
-                if (activePlayer.playerCanThrow()) {
-
+                if ((activePlayer != null) && activePlayer.playerCanThrow()) {
                     if (game.anyDiceSelected()) {
                         adapter.rollDice();
                         activePlayer.increaseRollCounter();
@@ -196,13 +212,14 @@ public class GameActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(GameActivity.this, "No rolls left", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(GameActivity.this, "Player missing", Toast.LENGTH_SHORT).show();
-            }
             }
         });
     }
 
+    /**
+     * Sets up a RecyclerView, with an adapter holding a list of Die objects,
+     * for the visual representation of the dice.
+     */
     private void createDiceBoard() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.die_recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -210,6 +227,9 @@ public class GameActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Cre
+     */
     private void createSubmitButton() {
         Button submitButton = (Button) findViewById(R.id.button_submit_dice);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -231,21 +251,15 @@ public class GameActivity extends AppCompatActivity {
                         int sum = game.sumActiveDice();
 
                         if (game.isSumLegal(sum, spinnerSelectedItem)) {
-
                             game.submit(spinnerSelectedItem, sum);
-                            adapter.disableActiveDice();
-                            menuItemLocked = true;
-                            updateRollButton();
-                            diceSubmitted = true;
+                            postSubmissionCleanUp();
 
                         } else {
                             Toast.makeText(GameActivity.this, "Sum doesn't match the category", Toast.LENGTH_SHORT).show();
                         }
-
                     } else {
                         Toast.makeText(GameActivity.this, "Select dice", Toast.LENGTH_SHORT).show();
                     }
-
                 } else {
                     Toast.makeText(GameActivity.this, "Select a category", Toast.LENGTH_SHORT).show();
                 }
@@ -253,9 +267,24 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets the selected dice to disabled, indicating they've been used.
+     * Locks the category, updates the roll button.
+     * Sets the boolean diceSubmitted to true, which enables the Done button.
+     */
+    private void postSubmissionCleanUp() {
+        adapter.disableActiveDice();
+        menuItemLocked = true;
+        updateRollButton();
+        diceSubmitted = true;
+        updateDoneButton();
+    }
+
+    /**
+     * Creates the Spinner holding the available categories.
+     */
     private void createSpinner() {
         spinner = (Spinner) findViewById(R.id.spinner_menu);
-
         setSpinnerAdapter();
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -272,19 +301,8 @@ public class GameActivity extends AppCompatActivity {
                                        View selectedItemView, int position, long id) {
 
                 String item = spinner.getSelectedItem().toString();
+                setSpinnerSelectedItem(item);
 
-                if (!item.equals("Select category:")) {
-
-                    if (menuItemLocked) {
-                        if (spinnerSelectedItem != null && !spinnerSelectedItem.equals(item)) {
-                            Toast.makeText(GameActivity.this, "You already started with category " + spinnerSelectedItem, Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else {
-                        spinnerSelectedItem = item;
-
-                    }
-                }
             }
 
             @Override
@@ -294,10 +312,25 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Checks whether its allowed to pick a new category,
+     * and sets the new category as the current one.
+     * @param item A String representing the selected item.
+     */
+    private void setSpinnerSelectedItem(String item) {
+        if (menuItemLocked) {
+            if (spinnerSelectedItem != null && !spinnerSelectedItem.equals(item)) {
+                Toast.makeText(GameActivity.this, "You already started with category " + spinnerSelectedItem, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            spinnerSelectedItem = item;
+        }
+    }
+
+    /**
+     * The resultButton navigates us to the result view.
+     */
     private void createResultButton() {
-        /**
-         * Navigates to the result view.
-         */
         Button resultButton = (Button) findViewById(R.id.button_result_view);
         resultButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,23 +340,35 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Starts a new activity showing the current score board.
+     */
     private void launchResultActivity() {
         Intent resultIntent = new Intent(GameActivity.this, ResultActivity.class);
-        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         HashMap<String, Integer> scores = game.getActivePlayer().getScores();
         resultIntent.putExtra(EXTRA_SCORE_BOARD, scores);
         startActivityForResult(resultIntent, scoreBoardResult);
     }
 
+    /**
+     * If the result coming back with the Intent is equal to RESTART_CODE,
+     * call finish() on this activity.
+     * @param requestCode a key for specifying the requested result.
+     * @param resultCode the result attached to the key.
+     * @param data the Intent that was sent with startActivityForResult();
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == scoreBoardResult) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == RESTART_CODE) {
                 finish();
             }
         }
     }
 
+    /**
+     * Calling methods for creating widgets.
+     */
     private void createWidgets() {
         createDiceBoard();
         createRollButton();
