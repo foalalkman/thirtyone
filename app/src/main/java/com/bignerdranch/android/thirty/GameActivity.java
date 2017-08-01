@@ -72,8 +72,6 @@ public class GameActivity extends AppCompatActivity {
     private void createGameInstance() {
         game = new Game();
         game.addPlayer("Player 1");
-
-//        menuItemLocked = false;
     }
 
     /**
@@ -114,6 +112,10 @@ public class GameActivity extends AppCompatActivity {
         rollButton.setEnabled(game.getActivePlayer().playerCanThrow());
     }
 
+    /**
+     * Enables/diables the done button depending
+     * on whether dice has been submitted or not.
+     */
     private void updateDoneButton() {
         doneButton.setEnabled(diceSubmitted);
     }
@@ -151,10 +153,6 @@ public class GameActivity extends AppCompatActivity {
                 if (spinnerSelectedItem != null && diceSubmitted) {
                     game.endSubmission(spinnerSelectedItem);
                     startNextRound();
-
-                    /** switch to next player if multi player
-                     activePlayer = game.getActivePlayer();  - get the new active player */
-
                 } else {
                     Toast.makeText(GameActivity.this, "Choose category and add points", Toast.LENGTH_SHORT).show();
                 }
@@ -228,7 +226,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * Cre
+     * Creates a submit button and sets a listener to it.
+     * When clicked, if the sum of the dice match the chosen category,
+     * they will be submitted to the players score board.
      */
     private void createSubmitButton() {
         Button submitButton = (Button) findViewById(R.id.button_submit_dice);
