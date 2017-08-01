@@ -23,20 +23,21 @@ public class MainActivity extends AppCompatActivity {
         startGameActivity();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
+    /**
+     * To make Restart work:
+     * When the GameActivity is being shut down a new one will launch.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         startGameActivity();
     }
 
+    /**
+     * Starts a new GameActivity.
+     */
     private void startGameActivity() {
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
