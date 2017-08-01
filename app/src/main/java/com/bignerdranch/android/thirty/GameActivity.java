@@ -22,6 +22,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * This activity class starts the GameActivity
+ * and was created to make it possible to restart the game.
+ */
 public class GameActivity extends AppCompatActivity {
 
     private Game game;

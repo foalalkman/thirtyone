@@ -1,14 +1,19 @@
 package com.bignerdranch.android.thirty;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-
 /**
  * Author: Annika Svedin
  * email: annika.svedin@gmail.com
  */
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+/**
+ * This activity class is a part of the controller layer,
+ * which controls and assembles the representation of the actvity_game.xml,
+ * die_view.xml and dice_view.xml.
+ */
 public class MainActivity extends AppCompatActivity {
 
     /**

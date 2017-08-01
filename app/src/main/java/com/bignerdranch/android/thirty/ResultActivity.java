@@ -17,6 +17,10 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+/**
+ * This activity class is a part of the controller layer,
+ * which controls the representation of the result_view.xml.
+ */
 public class ResultActivity extends AppCompatActivity {
 
     private static final String EXTRA_SCORE_BOARD =
