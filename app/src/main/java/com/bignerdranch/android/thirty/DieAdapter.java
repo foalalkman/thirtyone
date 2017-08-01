@@ -14,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import java.util.ArrayList;
 
+/**
+ * A controller class
+ * for the representation of the different states of the dice.
+ */
 class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
 
     private ArrayList<Die> dice;
@@ -76,6 +80,9 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
         }
     }
 
+    /**
+     * @return a new DieHolder glued to the itemView.
+     */
     @Override
     public DieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -84,6 +91,11 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
         return new DieHolder(itemView);
     }
 
+    /**
+     * Glues the die object to it's given DieHolder and runs an update.
+     * @param holder A DieHolder for the Die
+     * @param position The position in the recycler view.
+     */
     @Override
     public void onBindViewHolder(DieHolder holder, int position) {
         final Die die = dice.get(position);
@@ -97,11 +109,14 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
     }
 
 
+    /**
+     * Extends the ViewHolder and is customized to visually represent
+     * a Die with various colors.
+     */
     class DieHolder extends RecyclerView.ViewHolder {
         ImageView dieView;
         RelativeLayout relativeLayout;
         Die die;
-
 
         private final Integer[] images_red_dice = { R.drawable.red1,
                 R.drawable.red2,
@@ -126,10 +141,37 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
 
         DieHolder(View view) {
             super(view);
-            dieView = view.findViewById(R.id.die_view_image);
+            setDieView(view);
+            setRelativeLayout(view);
 
+            setRelativeLayoutListener();
+        }
+
+        /**
+         *  Inflates the ImageView to hold the Die.
+         * @param view a reference to the parent view.
+         */
+        private void setDieView(View view) {
+            dieView = view.findViewById(R.id.die_view_image);
+        }
+
+        /**
+         *  Inflates the RelativeLayout that wraps the ImageView.
+         * @param view a reference to the parent view.
+         */
+        private void setRelativeLayout(View view) {
             relativeLayout = view.findViewById(R.id.relative_layout);
+        }
+
+        /**
+         * Sets an OnClickListener on the relativeLayout.
+         */
+        private void setRelativeLayoutListener() {
             relativeLayout.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * When clicked on, the state of the die is updated.
+                 * @param v a reference to the parent view.
+                 */
                 @Override
                 public void onClick(View v) {
                     die.toggleActiveState();
@@ -138,6 +180,9 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
             });
         }
 
+        /**
+         * Sets different image resources on the dieView dependng on the state.
+         */
         void updateImage() {
             int state = die.getActiveState();
 
@@ -154,7 +199,6 @@ class DieAdapter extends RecyclerView.Adapter<DieAdapter.DieHolder> {
 
                 default:
                     throw new IllegalStateException("State not defined");
-
             }
         }
     }

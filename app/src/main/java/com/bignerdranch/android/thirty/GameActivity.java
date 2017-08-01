@@ -411,6 +411,12 @@ public class GameActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Called when the Action Bar was clicked.
+     * @param item The menu item being clicked on.
+     * @return true if the item id corresponded to a given id and fired
+     * an action.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -418,7 +424,6 @@ public class GameActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.restart_game) {
             finish();
 
@@ -427,9 +432,4 @@ public class GameActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-
 }

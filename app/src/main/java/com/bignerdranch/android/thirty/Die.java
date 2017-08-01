@@ -10,6 +10,12 @@ import android.os.Parcelable;
 
 import java.util.Random;
 
+/**
+ * The model for a Die, where one can toggle
+ * between the states active, passive and disabled.
+ * The Die can be rolled and by that a random number between 1 and 6 is
+ * assigned as the current value.
+ */
 class Die implements Parcelable {
 
     private int active;
